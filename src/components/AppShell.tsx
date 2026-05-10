@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
-import { Home, ListChecks, Trophy, Award, LogOut, Sparkles } from "lucide-react";
+import { Home, ListChecks, Trophy, Award, LogOut, Sparkles, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const tabs = [
   { to: "/dashboard", label: "Home", icon: Home },
@@ -11,6 +12,7 @@ const tabs = [
 
 export function AppShell() {
   const { signOut, user } = useAuth();
+  const { theme, toggle } = useTheme();
   const loc = useLocation();
 
   return (
@@ -23,13 +25,24 @@ export function AppShell() {
             </span>
             <span className="text-base">RoutineMate</span>
           </Link>
-          <button
-            onClick={() => signOut()}
-            className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground"
-            title={user?.email ?? ""}
-          >
-            <LogOut className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={toggle}
+              className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+            <button
+              onClick={() => signOut()}
+              className="grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              title={user?.email ?? "Sign out"}
+              aria-label="Sign out"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </header>
 
