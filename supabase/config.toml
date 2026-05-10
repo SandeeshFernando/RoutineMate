@@ -1,1 +1,4 @@
 project_id = "vbcjzjxppvgqmbcxtorj"
+
+[functions.aria-chat]
+verify_jwt = false
