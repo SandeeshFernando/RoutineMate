@@ -1,11 +1,12 @@
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
-import { Home, ListChecks, Trophy, Award, LogOut, Sparkles, Sun, Moon } from "lucide-react";
+import { Home, ListChecks, Trophy, Award, LogOut, Sparkles, Sun, Moon, MessageCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const tabs = [
   { to: "/dashboard", label: "Home", icon: Home },
   { to: "/routine", label: "Routine", icon: ListChecks },
+  { to: "/coach", label: "Aria", icon: MessageCircle },
   { to: "/challenge", label: "Challenge", icon: Trophy },
   { to: "/rewards", label: "Rewards", icon: Award },
 ] as const;
@@ -51,7 +52,7 @@ export function AppShell() {
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 z-40 h-16 border-t border-border bg-background/95 backdrop-blur md:hidden">
-        <div className="mx-auto grid h-full max-w-md grid-cols-4">
+        <div className="mx-auto grid h-full max-w-md grid-cols-5">
           {tabs.map((t) => {
             const active = loc.pathname.startsWith(t.to);
             const Icon = t.icon;
