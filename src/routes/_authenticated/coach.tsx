@@ -3,10 +3,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Send, Sparkles, Plus, Loader2, MessageCircle, Calendar as CalIcon } from "lucide-react";
+import { Send, Sparkles, Plus, Loader2, MessageCircle, Calendar as CalIcon, CalendarPlus, Bell } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { extractRoadmap, extractTime, type RoadmapRow } from "@/lib/aria-sync";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/coach")({ component: CoachPage });
 
@@ -22,10 +24,12 @@ const QUICK_PROMPTS = [
 function CoachPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const { data: conversations } = useQuery({
@@ -43,7 +47,7 @@ function CoachPage() {
   const { data: goals } = useQuery({
     queryKey: ["coach-goals", user?.id],
     queryFn: async () =>
-      (await supabase.from("goals").select("title,category,deadline,available_time_per_day,priority").eq("user_id", user!.id)).data ?? [],
+      (await supabase.from("goals").select("id,title,category,deadline,available_time_per_day,priority").eq("user_id", user!.id)).data ?? [],
     enabled: !!user,
   });
 
@@ -180,6 +184,103 @@ function CoachPage() {
     }
   }
 
+  async function syncRoadmap(markdown: string) {
+    if (!user || syncing) return;
+    const rows = extractRoadmap(markdown);
+    if (!rows.length) {
+      toast.error("I couldn't find a Day | Date | Tasks table in that reply. Ask Aria to put the plan in a table.");
+      return;
+    }
+    setSyncing(true);
+    try {
+      const goalId = goals?.[0]?.id ?? null;
+
+      // Upsert daily_routines per date
+      const { error: rErr } = await supabase.from("daily_routines").upsert(
+        rows.map((r) => ({
+          user_id: user.id,
+          goal_id: goalId,
+          routine_date: r.date,
+          morning_plan: r.focus || null,
+          main_tasks: [{ focus: r.focus, tasks: r.tasks, time: r.time }] as unknown as object,
+          total_tasks: 1,
+          completed_tasks: 0,
+          status: "pending",
+        })),
+        { onConflict: "user_id,goal_id,routine_date", ignoreDuplicates: false } as never,
+      );
+      // Some schemas don't have that unique index; fall back to plain insert if upsert fails
+      if (rErr) {
+        await supabase.from("daily_routines").insert(
+          rows.map((r) => ({
+            user_id: user.id,
+            goal_id: goalId,
+            routine_date: r.date,
+            morning_plan: r.focus || null,
+            main_tasks: [{ focus: r.focus, tasks: r.tasks, time: r.time }] as unknown as object,
+            total_tasks: 1,
+            completed_tasks: 0,
+            status: "pending",
+          })),
+        );
+      }
+
+      // Build reminders from rows that have a parseable time
+      const reminderRows: { time: string; row: RoadmapRow }[] = [];
+      for (const r of rows) {
+        const t = extractTime(r.time);
+        if (t) reminderRows.push({ time: t, row: r });
+      }
+      const uniqueTimes = new Map<string, string>();
+      for (const { time, row } of reminderRows) {
+        if (!uniqueTimes.has(time)) {
+          uniqueTimes.set(time, row.focus || row.tasks.slice(0, 80) || "Time for your routine");
+        }
+      }
+      let remindersCreated = 0;
+      if (uniqueTimes.size) {
+        // Avoid duplicating identical existing reminders
+        const { data: existing } = await supabase
+          .from("reminders")
+          .select("reminder_time")
+          .eq("user_id", user.id)
+          .eq("is_active", true);
+        const existingSet = new Set((existing ?? []).map((e) => String(e.reminder_time).slice(0, 5)));
+
+        const toInsert = [...uniqueTimes.entries()]
+          .filter(([t]) => !existingSet.has(t))
+          .map(([t, msg]) => ({
+            user_id: user.id,
+            goal_id: goalId,
+            reminder_type: "aria_routine",
+            reminder_time: t,
+            message: msg,
+            is_active: true,
+          }));
+        if (toInsert.length) {
+          const { error } = await supabase.from("reminders").insert(toInsert);
+          if (!error) remindersCreated = toInsert.length;
+        }
+      }
+
+      // Browser notification permission
+      if (typeof Notification !== "undefined" && Notification.permission === "default") {
+        Notification.requestPermission().catch(() => {});
+      }
+
+      qc.invalidateQueries({ queryKey: ["calendar-routines"] });
+      qc.invalidateQueries({ queryKey: ["calendar-reminders"] });
+      qc.invalidateQueries({ queryKey: ["reminders-today"] });
+
+      toast.success(`Synced ${rows.length} day${rows.length > 1 ? "s" : ""} to calendar · ${remindersCreated} reminder${remindersCreated === 1 ? "" : "s"} set`);
+    } catch (e) {
+      console.error(e);
+      toast.error("Couldn't sync this plan. Please try again.");
+    } finally {
+      setSyncing(false);
+    }
+  }
+
   return (
     <div className="grid gap-4 md:grid-cols-[260px_1fr]">
       {/* Sidebar */}
@@ -248,7 +349,14 @@ function CoachPage() {
           ) : (
             <div className="space-y-4">
               {messages.map((m, i) => (
-                <Bubble key={m.id ?? i} role={m.role} content={m.content} />
+                <Bubble
+                  key={m.id ?? i}
+                  role={m.role}
+                  content={m.content}
+                  onSync={m.role === "assistant" ? () => syncRoadmap(m.content) : undefined}
+                  syncing={syncing}
+                  onOpenCalendar={() => navigate({ to: "/calendar" })}
+                />
               ))}
               {streaming && messages[messages.length - 1]?.content === "" && (
                 <div className="flex items-center gap-2 px-2 text-xs text-muted-foreground">
@@ -297,7 +405,19 @@ function CoachPage() {
   );
 }
 
-function Bubble({ role, content }: { role: "user" | "assistant"; content: string }) {
+function Bubble({
+  role,
+  content,
+  onSync,
+  syncing,
+  onOpenCalendar,
+}: {
+  role: "user" | "assistant";
+  content: string;
+  onSync?: () => void;
+  syncing?: boolean;
+  onOpenCalendar?: () => void;
+}) {
   if (role === "user") {
     return (
       <div className="flex justify-end">
@@ -307,13 +427,37 @@ function Bubble({ role, content }: { role: "user" | "assistant"; content: string
       </div>
     );
   }
+  const hasRoadmap = !!onSync && extractRoadmap(content).length > 0;
   return (
     <div className="flex gap-2">
       <div className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-primary to-purple-500 text-primary-foreground">
         <Sparkles className="h-3.5 w-3.5" />
       </div>
-      <div className="prose prose-sm max-w-none dark:prose-invert prose-headings:mb-2 prose-headings:mt-3 prose-p:my-2 prose-table:my-3 prose-th:bg-secondary prose-th:px-2 prose-th:py-1 prose-td:px-2 prose-td:py-1 prose-table:border prose-table:border-border prose-th:border prose-th:border-border prose-td:border prose-td:border-border flex-1 overflow-x-auto rounded-2xl rounded-tl-sm bg-secondary/50 px-3.5 py-2.5 text-sm text-foreground">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{content || "..."}</ReactMarkdown>
+      <div className="flex-1 space-y-2">
+        <div className="prose prose-sm max-w-none dark:prose-invert prose-headings:mb-2 prose-headings:mt-3 prose-p:my-2 prose-table:my-3 prose-th:bg-secondary prose-th:px-2 prose-th:py-1 prose-td:px-2 prose-td:py-1 prose-table:border prose-table:border-border prose-th:border prose-th:border-border prose-td:border prose-td:border-border overflow-x-auto rounded-2xl rounded-tl-sm bg-secondary/50 px-3.5 py-2.5 text-sm text-foreground">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content || "..."}</ReactMarkdown>
+        </div>
+        {hasRoadmap && (
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={onSync}
+              disabled={syncing}
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-primary px-3 text-xs font-semibold text-primary-foreground shadow-[var(--shadow-glow)] disabled:opacity-50"
+            >
+              {syncing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CalendarPlus className="h-3.5 w-3.5" />}
+              Sync roadmap to calendar
+            </button>
+            <button
+              onClick={onOpenCalendar}
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-border bg-card px-3 text-xs font-medium hover:bg-secondary"
+            >
+              <CalIcon className="h-3.5 w-3.5" /> Open calendar
+            </button>
+            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+              <Bell className="h-3 w-3" /> Reminders auto-set from times in the table
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
