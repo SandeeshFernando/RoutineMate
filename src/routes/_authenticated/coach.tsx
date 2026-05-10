@@ -202,26 +202,26 @@ function CoachPage() {
           goal_id: goalId,
           routine_date: r.date,
           morning_plan: r.focus || null,
-          main_tasks: [{ focus: r.focus, tasks: r.tasks, time: r.time }] as unknown as object,
+          main_tasks: JSON.parse(JSON.stringify([{ focus: r.focus, tasks: r.tasks, time: r.time }])),
           total_tasks: 1,
           completed_tasks: 0,
           status: "pending",
-        })),
+        })) as never,
         { onConflict: "user_id,goal_id,routine_date", ignoreDuplicates: false } as never,
       );
       // Some schemas don't have that unique index; fall back to plain insert if upsert fails
       if (rErr) {
-        await supabase.from("daily_routines").insert(
+          await supabase.from("daily_routines").insert(
           rows.map((r) => ({
             user_id: user.id,
             goal_id: goalId,
             routine_date: r.date,
             morning_plan: r.focus || null,
-            main_tasks: [{ focus: r.focus, tasks: r.tasks, time: r.time }] as unknown as object,
+              main_tasks: JSON.parse(JSON.stringify([{ focus: r.focus, tasks: r.tasks, time: r.time }])),
             total_tasks: 1,
             completed_tasks: 0,
             status: "pending",
-          })),
+            })) as never,
         );
       }
 
