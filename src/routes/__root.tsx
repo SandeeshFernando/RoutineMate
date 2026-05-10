@@ -10,6 +10,8 @@ import {
 
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ThemeToggleFloat } from "@/components/ThemeToggleFloat";
 import { Toaster } from "sonner";
 
 function NotFoundComponent() {
@@ -120,10 +122,25 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Outlet />
-        <Toaster position="top-center" theme="dark" richColors />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <PublicThemeToggle />
+          <Outlet />
+          <Toaster position="top-center" richColors />
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
+}
+
+function PublicThemeToggle() {
+  const path = useRouterPath();
+  const publicPaths = ["/", "/login", "/signup"];
+  if (!publicPaths.includes(path)) return null;
+  return <ThemeToggleFloat />;
+}
+
+function useRouterPath() {
+  const router = useRouter();
+  return router.state.location.pathname;
 }
