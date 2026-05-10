@@ -4,8 +4,10 @@ AI-powered routines, daily plans, and 21-day habit challenges.
 
 ## Stack
 - React 19 + TypeScript + Vite + Tailwind v4 + TanStack Start
-- Lovable Cloud (Supabase) — Postgres, Auth, RLS
-- Lovable AI Gateway (`google/gemini-3-flash-preview`) via TanStack server function
+- Lovable Cloud (Supabase) — Postgres, Auth, RLS, Edge Functions
+- Lovable AI Gateway (`google/gemini-3-flash-preview`)
+  - Server function `generateAiPlan` for one-shot structured plans
+  - Edge function `aria-chat` for streaming conversational coach (Aria)
 
 ## Structure
 - `src/contexts/AuthContext.tsx` — Supabase session provider
@@ -21,9 +23,14 @@ AI-powered routines, daily plans, and 21-day habit challenges.
 - `src/routes/_authenticated/routine.tsx` — today's tasks
 - `src/routes/_authenticated/challenge.tsx` — 21-day progress per goal
 - `src/routes/_authenticated/rewards.tsx` — badges
+- `src/routes/_authenticated/coach.tsx` — Aria conversational AI coach (streaming, markdown, conversation history)
+- `supabase/functions/aria-chat/index.ts` — SSE streaming chat with Lovable AI
 
 ## DB (RLS: own rows only)
-profiles · goals · tasks · ai_plans · daily_routines · reminders · challenge_progress · rewards · badges
+profiles · goals · tasks · ai_plans · daily_routines · reminders · challenge_progress · rewards · badges · chat_conversations · chat_messages
+
+## Aria — Personal AI Coach
+Conversational AI like Claude/Gemini. The user describes their situation in plain language ("I missed 10 lectures, I work full-time, only 2 hrs/night") and Aria builds a personalised catch-up plan, daily routine, and 21-day roadmap rendered in markdown tables (Day | Date | Focus | Tasks | Time) so it can sync with calendar/challenge views. Aria has read context of the user's existing goals and ties advice to the points/badges/challenge system.
 
 ## Flow
 Create Goal → insert goal + tasks + reminder + 4 locked badges + 21 pending challenge days → call `generateAiPlan` → save `ai_plans` → navigate to goal detail.
