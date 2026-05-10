@@ -25,6 +25,17 @@ AI-powered routines, daily plans, and 21-day habit challenges.
 - `src/routes/_authenticated/rewards.tsx` — badges
 - `src/routes/_authenticated/coach.tsx` — Aria conversational AI coach (streaming, markdown, conversation history)
 - `supabase/functions/aria-chat/index.ts` — SSE streaming chat with Lovable AI
+- `src/routes/_authenticated/calendar.tsx` — month-view calendar of `daily_routines` + active reminders
+- `src/components/ReminderScheduler.tsx` — global poller that fires browser Notifications at each reminder time (once/day)
+- `src/lib/aria-sync.ts` — parses Aria's markdown roadmap tables (Day | Date | Focus | Tasks | Time)
+
+## Calendar + Reminders Sync
+Every assistant message containing a `Day | Date | Focus | Tasks | Time` table shows a **Sync roadmap to calendar** button that:
+1. Inserts one `daily_routines` row per dated row (focus + tasks + time stored in `main_tasks` jsonb).
+2. Extracts `HH:MM` from the Time column and creates one active `reminders` row per unique time (deduped against existing reminders).
+3. Requests browser Notification permission.
+
+`ReminderScheduler` (mounted in `AppShell`) polls active reminders and fires a Notification + in-app toast at the matching minute. Each reminder fires once per day (tracked in localStorage).
 
 ## DB (RLS: own rows only)
 profiles · goals · tasks · ai_plans · daily_routines · reminders · challenge_progress · rewards · badges · chat_conversations · chat_messages
