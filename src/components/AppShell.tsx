@@ -1,11 +1,14 @@
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
-import { Home, ListChecks, Trophy, Award, LogOut, Sparkles, Sun, Moon, MessageCircle } from "lucide-react";
+import { Home, ListChecks, Trophy, Award, LogOut, Sparkles, Sun, Moon, MessageCircle, Calendar } from "lucide-react";
+import { useEffect } from "react";
+import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { ReminderScheduler } from "@/components/ReminderScheduler";
 
 const tabs = [
   { to: "/dashboard", label: "Home", icon: Home },
-  { to: "/routine", label: "Routine", icon: ListChecks },
+  { to: "/calendar", label: "Calendar", icon: Calendar },
   { to: "/coach", label: "Aria", icon: MessageCircle },
   { to: "/challenge", label: "Challenge", icon: Trophy },
   { to: "/rewards", label: "Rewards", icon: Award },
@@ -16,8 +19,18 @@ export function AppShell() {
   const { theme, toggle } = useTheme();
   const loc = useLocation();
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { message?: string } | undefined;
+      toast.message("⏰ Reminder", { description: detail?.message ?? "Time for your routine" });
+    };
+    window.addEventListener("rm-reminder", handler as EventListener);
+    return () => window.removeEventListener("rm-reminder", handler as EventListener);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <ReminderScheduler />
       <header className="sticky top-0 z-40 h-14 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-4">
           <Link to="/dashboard" className="flex items-center gap-2 font-bold">
