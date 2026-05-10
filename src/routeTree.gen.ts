@@ -9,38 +9,170 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRoutineRouteImport } from './routes/_authenticated/routine'
+import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated/rewards'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedChallengeRouteImport } from './routes/_authenticated/challenge'
+import { Route as AuthenticatedGoalsNewRouteImport } from './routes/_authenticated/goals.new'
+import { Route as AuthenticatedGoalsGoalIdRouteImport } from './routes/_authenticated/goals.$goalId'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRoutineRoute = AuthenticatedRoutineRouteImport.update({
+  id: '/routine',
+  path: '/routine',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedRewardsRoute = AuthenticatedRewardsRouteImport.update({
+  id: '/rewards',
+  path: '/rewards',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedChallengeRoute = AuthenticatedChallengeRouteImport.update({
+  id: '/challenge',
+  path: '/challenge',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedGoalsNewRoute = AuthenticatedGoalsNewRouteImport.update({
+  id: '/goals/new',
+  path: '/goals/new',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedGoalsGoalIdRoute =
+  AuthenticatedGoalsGoalIdRouteImport.update({
+    id: '/goals/$goalId',
+    path: '/goals/$goalId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/challenge': typeof AuthenticatedChallengeRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/rewards': typeof AuthenticatedRewardsRoute
+  '/routine': typeof AuthenticatedRoutineRoute
+  '/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
+  '/goals/new': typeof AuthenticatedGoalsNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/challenge': typeof AuthenticatedChallengeRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/rewards': typeof AuthenticatedRewardsRoute
+  '/routine': typeof AuthenticatedRoutineRoute
+  '/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
+  '/goals/new': typeof AuthenticatedGoalsNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/_authenticated/challenge': typeof AuthenticatedChallengeRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
+  '/_authenticated/routine': typeof AuthenticatedRoutineRoute
+  '/_authenticated/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
+  '/_authenticated/goals/new': typeof AuthenticatedGoalsNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/challenge'
+    | '/dashboard'
+    | '/rewards'
+    | '/routine'
+    | '/goals/$goalId'
+    | '/goals/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/challenge'
+    | '/dashboard'
+    | '/rewards'
+    | '/routine'
+    | '/goals/$goalId'
+    | '/goals/new'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/signup'
+    | '/_authenticated/challenge'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/rewards'
+    | '/_authenticated/routine'
+    | '/_authenticated/goals/$goalId'
+    | '/_authenticated/goals/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +180,78 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/routine': {
+      id: '/_authenticated/routine'
+      path: '/routine'
+      fullPath: '/routine'
+      preLoaderRoute: typeof AuthenticatedRoutineRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/rewards': {
+      id: '/_authenticated/rewards'
+      path: '/rewards'
+      fullPath: '/rewards'
+      preLoaderRoute: typeof AuthenticatedRewardsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/challenge': {
+      id: '/_authenticated/challenge'
+      path: '/challenge'
+      fullPath: '/challenge'
+      preLoaderRoute: typeof AuthenticatedChallengeRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/goals/new': {
+      id: '/_authenticated/goals/new'
+      path: '/goals/new'
+      fullPath: '/goals/new'
+      preLoaderRoute: typeof AuthenticatedGoalsNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/goals/$goalId': {
+      id: '/_authenticated/goals/$goalId'
+      path: '/goals/$goalId'
+      fullPath: '/goals/$goalId'
+      preLoaderRoute: typeof AuthenticatedGoalsGoalIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedChallengeRoute: typeof AuthenticatedChallengeRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
+  AuthenticatedRoutineRoute: typeof AuthenticatedRoutineRoute
+  AuthenticatedGoalsGoalIdRoute: typeof AuthenticatedGoalsGoalIdRoute
+  AuthenticatedGoalsNewRoute: typeof AuthenticatedGoalsNewRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedChallengeRoute: AuthenticatedChallengeRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedRewardsRoute: AuthenticatedRewardsRoute,
+  AuthenticatedRoutineRoute: AuthenticatedRoutineRoute,
+  AuthenticatedGoalsGoalIdRoute: AuthenticatedGoalsGoalIdRoute,
+  AuthenticatedGoalsNewRoute: AuthenticatedGoalsNewRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
