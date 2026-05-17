@@ -66,8 +66,8 @@ function Index() {
         </Link>
       </header>
 
+      <main>
       <section className="mx-auto max-w-3xl px-4 pt-12 text-center md:pt-20">
-        <main>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
           <Sparkles className="h-3 w-3" /> Meet Aria — your personal AI coach
         </span>
