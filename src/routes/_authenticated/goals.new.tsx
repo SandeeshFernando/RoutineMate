@@ -9,6 +9,16 @@ import { generateAiPlan } from "@/lib/ai-plan.functions";
 
 export const Route = createFileRoute("/_authenticated/goals/new")({
   component: NewGoal,
+  head: () => ({
+    meta: [
+      { title: "New Goal — RoutineMate AI" },
+      { name: "description", content: "Create a new goal and let Aria build an AI-powered daily routine, tasks, reminder, and 21-day challenge for you." },
+      { property: "og:title", content: "New Goal — RoutineMate AI" },
+      { property: "og:description", content: "Create a goal and get an AI routine and 21-day challenge." },
+      { property: "og:url", content: "https://achieve-ai-app.lovable.app/goals/new" },
+    ],
+    links: [{ rel: "canonical", href: "https://achieve-ai-app.lovable.app/goals/new" }],
+  }),
 });
 
 const CATEGORIES = ["Study", "Fitness", "Career", "Personal Development", "Business", "Health", "Finance", "Other"];
@@ -212,6 +222,7 @@ function NewGoal() {
                 {tasks.length > 1 && (
                   <button
                     type="button"
+                    aria-label="Remove task"
                     onClick={() => setTasks(tasks.filter((_, j) => j !== i))}
                     className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-border text-muted-foreground"
                   >

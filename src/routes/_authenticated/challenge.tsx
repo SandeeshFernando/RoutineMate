@@ -4,7 +4,19 @@ import { Trophy, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-export const Route = createFileRoute("/_authenticated/challenge")({ component: ChallengePage });
+export const Route = createFileRoute("/_authenticated/challenge")({
+  component: ChallengePage,
+  head: () => ({
+    meta: [
+      { title: "21-Day Challenge — RoutineMate AI" },
+      { name: "description", content: "Track your 21-day habit challenge progress across every goal and earn streak points along the way." },
+      { property: "og:title", content: "21-Day Challenge — RoutineMate AI" },
+      { property: "og:description", content: "Build real habits in 21 days." },
+      { property: "og:url", content: "https://achieve-ai-app.lovable.app/challenge" },
+    ],
+    links: [{ rel: "canonical", href: "https://achieve-ai-app.lovable.app/challenge" }],
+  }),
+});
 
 function ChallengePage() {
   const { user } = useAuth();
@@ -40,7 +52,7 @@ function ChallengePage() {
               <Link key={g.id} to="/goals/$goalId" params={{ goalId: g.id }} className="block rounded-2xl border border-border bg-card p-4">
                 <div className="flex items-center justify-between">
                   <div className="min-w-0">
-                    <h3 className="truncate text-sm font-semibold">{g.title}</h3>
+                    <h2 className="truncate text-sm font-semibold">{g.title}</h2>
                     <p className="text-xs text-muted-foreground">Day {done} of 21</p>
                   </div>
                   <Sparkles className="h-4 w-4 text-primary" />

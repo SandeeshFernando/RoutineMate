@@ -7,6 +7,16 @@ import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
+  head: () => ({
+    meta: [
+      { title: "Log in — RoutineMate AI" },
+      { name: "description", content: "Sign in to RoutineMate AI to continue your daily routine, AI plans, and 21-day reward challenge with Aria." },
+      { property: "og:title", content: "Log in — RoutineMate AI" },
+      { property: "og:description", content: "Sign in to RoutineMate AI to continue your routine with Aria." },
+      { property: "og:url", content: "https://achieve-ai-app.lovable.app/login" },
+    ],
+    links: [{ rel: "canonical", href: "https://achieve-ai-app.lovable.app/login" }],
+  }),
 });
 
 function LoginPage() {

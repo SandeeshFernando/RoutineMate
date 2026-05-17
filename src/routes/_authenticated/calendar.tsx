@@ -5,7 +5,19 @@ import { ChevronLeft, ChevronRight, Calendar as CalIcon, Clock, Bell } from "luc
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-export const Route = createFileRoute("/_authenticated/calendar")({ component: CalendarPage });
+export const Route = createFileRoute("/_authenticated/calendar")({
+  component: CalendarPage,
+  head: () => ({
+    meta: [
+      { title: "Calendar — RoutineMate AI" },
+      { name: "description", content: "See your Aria roadmap day by day, with active reminders and synced routines on a monthly calendar." },
+      { property: "og:title", content: "Calendar — RoutineMate AI" },
+      { property: "og:description", content: "Your Aria roadmap and reminders, day by day." },
+      { property: "og:url", content: "https://achieve-ai-app.lovable.app/calendar" },
+    ],
+    links: [{ rel: "canonical", href: "https://achieve-ai-app.lovable.app/calendar" }],
+  }),
+});
 
 type Routine = {
   id: string;
@@ -72,9 +84,9 @@ function CalendarPage() {
           <p className="mt-1 text-sm text-muted-foreground">Your roadmap, day by day. Synced from Aria.</p>
         </div>
         <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1">
-          <button onClick={() => setCursor(addMonths(cursor, -1))} className="grid h-8 w-8 place-items-center rounded-lg hover:bg-secondary"><ChevronLeft className="h-4 w-4" /></button>
+          <button aria-label="Previous month" onClick={() => setCursor(addMonths(cursor, -1))} className="grid h-8 w-8 place-items-center rounded-lg hover:bg-secondary"><ChevronLeft className="h-4 w-4" /></button>
           <div className="px-2 text-sm font-semibold">{cursor.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</div>
-          <button onClick={() => setCursor(addMonths(cursor, 1))} className="grid h-8 w-8 place-items-center rounded-lg hover:bg-secondary"><ChevronRight className="h-4 w-4" /></button>
+          <button aria-label="Next month" onClick={() => setCursor(addMonths(cursor, 1))} className="grid h-8 w-8 place-items-center rounded-lg hover:bg-secondary"><ChevronRight className="h-4 w-4" /></button>
         </div>
       </div>
 

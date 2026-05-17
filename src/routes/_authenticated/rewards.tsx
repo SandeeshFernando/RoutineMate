@@ -4,7 +4,19 @@ import { Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-export const Route = createFileRoute("/_authenticated/rewards")({ component: Rewards });
+export const Route = createFileRoute("/_authenticated/rewards")({
+  component: Rewards,
+  head: () => ({
+    meta: [
+      { title: "Rewards & Badges — RoutineMate AI" },
+      { name: "description", content: "See the points you've earned and the 21-day challenge badges you've unlocked on RoutineMate AI." },
+      { property: "og:title", content: "Rewards & Badges — RoutineMate AI" },
+      { property: "og:description", content: "Your points and unlocked badges." },
+      { property: "og:url", content: "https://achieve-ai-app.lovable.app/rewards" },
+    ],
+    links: [{ rel: "canonical", href: "https://achieve-ai-app.lovable.app/rewards" }],
+  }),
+});
 
 function Rewards() {
   const { user } = useAuth();
@@ -35,7 +47,7 @@ function Rewards() {
               <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-secondary text-2xl">
                 {b.is_unlocked ? b.badge_icon : <Lock className="h-5 w-5 text-muted-foreground" />}
               </div>
-              <h3 className="mt-3 text-sm font-semibold">{b.badge_name}</h3>
+              <h2 className="mt-3 text-sm font-semibold">{b.badge_name}</h2>
               <p className="text-[11px] text-muted-foreground">{b.badge_description}</p>
               {b.goals?.title && <p className="mt-1 truncate text-[10px] text-muted-foreground">for {b.goals.title}</p>}
             </div>
