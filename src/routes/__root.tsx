@@ -81,11 +81,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { title: "RoutineMate AI — AI Routines, Goal Plans & 21-Day Challenges" },
       { name: "description", content: "Achieve your goals with AI-powered routines, daily plans, reminders, and a 21-day reward system." },
-      { property: "og:title", content: "RoutineMate AI" },
-      { property: "og:description", content: "AI-powered daily routines and 21-day habit challenges." },
+      { property: "og:title", content: "RoutineMate AI — AI Routines, Goal Plans & 21-Day Challenges" },
+      { property: "og:description", content: "Achieve your goals with AI-powered routines, daily plans, reminders, and a 21-day reward system." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "RoutineMate AI — AI Routines, Goal Plans & 21-Day Challenges" },
+      { name: "twitter:description", content: "Achieve your goals with AI-powered routines, daily plans, reminders, and a 21-day reward system." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/162d4768-c6f4-40fa-87a4-576a67025409/id-preview-a903ebc9--33eb28b3-5213-48d7-9718-c75b891e4410.lovable.app-1778411924365.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/162d4768-c6f4-40fa-87a4-576a67025409/id-preview-a903ebc9--33eb28b3-5213-48d7-9718-c75b891e4410.lovable.app-1778411924365.png" },
     ],
     links: [
       {
