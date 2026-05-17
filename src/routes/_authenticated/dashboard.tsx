@@ -4,7 +4,19 @@ import { Plus, Sparkles, Target, Flame, Trophy, ArrowRight } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-export const Route = createFileRoute("/_authenticated/dashboard")({ component: Dashboard });
+export const Route = createFileRoute("/_authenticated/dashboard")({
+  component: Dashboard,
+  head: () => ({
+    meta: [
+      { title: "Dashboard — RoutineMate AI" },
+      { name: "description", content: "Your RoutineMate dashboard: points, streak, badges, and active goals at a glance." },
+      { property: "og:title", content: "Dashboard — RoutineMate AI" },
+      { property: "og:description", content: "Track your goals, streak, and badges." },
+      { property: "og:url", content: "https://achieve-ai-app.lovable.app/dashboard" },
+    ],
+    links: [{ rel: "canonical", href: "https://achieve-ai-app.lovable.app/dashboard" }],
+  }),
+});
 
 function Dashboard() {
   const { user } = useAuth();
@@ -41,7 +53,7 @@ function Dashboard() {
       <Link to="/goals/new" className="flex items-center justify-between rounded-2xl border border-border bg-gradient-to-br from-primary/15 to-card p-5">
         <div>
           <div className="flex items-center gap-2 text-xs font-medium text-primary"><Sparkles className="h-3.5 w-3.5" /> AI Coach</div>
-          <h3 className="mt-1 text-base font-semibold">Generate a new routine</h3>
+          <h2 className="mt-1 text-base font-semibold">Generate a new routine</h2>
           <p className="text-xs text-muted-foreground">Turn a goal into a daily plan in seconds.</p>
         </div>
         <span className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"><Plus className="h-5 w-5" /></span>
@@ -54,7 +66,7 @@ function Dashboard() {
         {!goals?.length ? (
           <Link to="/goals/new" className="block rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center">
             <Target className="mx-auto h-8 w-8 text-primary" />
-            <h3 className="mt-3 text-base font-semibold">Create your first goal</h3>
+            <h2 className="mt-3 text-base font-semibold">Create your first goal</h2>
             <p className="mx-auto mt-1 max-w-xs text-xs text-muted-foreground">Tell RoutineMate what you want to achieve. We'll build a plan and a 21-day challenge.</p>
             <span className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"><Plus className="h-3.5 w-3.5" /> New goal</span>
           </Link>
@@ -67,7 +79,7 @@ function Dashboard() {
                     <span className="rounded-md bg-primary/15 px-2 py-0.5 text-[10px] font-medium uppercase text-primary">{g.category}</span>
                     {g.deadline && <span className="text-[10px] text-muted-foreground">by {g.deadline}</span>}
                   </div>
-                  <h3 className="mt-1 truncate text-sm font-semibold">{g.title}</h3>
+                  <h2 className="mt-1 truncate text-sm font-semibold">{g.title}</h2>
                   <div className="mt-2 h-1.5 w-40 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-primary" style={{ width: `${g.progress_percentage ?? 0}%` }} /></div>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground" />

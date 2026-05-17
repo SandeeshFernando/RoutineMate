@@ -1,0 +1,19 @@
+# RoutineMate AI
+
+> Meet Aria — a conversational AI coach that turns your goals and busy schedule into personalized daily routines, catch-up plans, and a 21-day reward challenge.
+
+RoutineMate AI helps people build real habits. You chat with Aria like you would with Claude or Gemini, she designs a roadmap that fits your real life, syncs it to your calendar with reminders, and tracks your 21-day challenge with points and badges.
+
+## Pages
+
+- [Home](/): Meet Aria, the personal AI routine coach.
+- [Log in](/login): Sign in to your RoutineMate account.
+- [Sign up](/signup): Create a free RoutineMate account.
+
+## Optional
+
+- [Dashboard](/dashboard): Your goals, points, streak and badges (auth required).
+- [Aria coach](/coach): Conversational AI routine planner (auth required).
+- [Calendar](/calendar): Day-by-day synced roadmap (auth required).
+- [Challenge](/challenge): 21-day habit challenge progress (auth required).
+- [Rewards](/rewards): Badges and points (auth required).

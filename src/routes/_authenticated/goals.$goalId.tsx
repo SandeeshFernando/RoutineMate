@@ -6,7 +6,17 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-export const Route = createFileRoute("/_authenticated/goals/$goalId")({ component: GoalDetail });
+export const Route = createFileRoute("/_authenticated/goals/$goalId")({
+  component: GoalDetail,
+  head: () => ({
+    meta: [
+      { title: "Goal — RoutineMate AI" },
+      { name: "description", content: "Your AI plan, daily tasks, and 21-day challenge progress for this goal." },
+      { property: "og:title", content: "Goal — RoutineMate AI" },
+      { property: "og:description", content: "AI plan, tasks, and 21-day progress for your goal." },
+    ],
+  }),
+});
 
 function GoalDetail() {
   const { goalId } = Route.useParams();
@@ -125,7 +135,7 @@ function PlanCard({ title, body }: { title: string; body: string }) {
   if (!body) return null;
   return (
     <div className="rounded-2xl border border-border bg-card p-5">
-      <h3 className="text-sm font-semibold">{title}</h3>
+      <h2 className="text-sm font-semibold">{title}</h2>
       <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{body}</p>
     </div>
   );

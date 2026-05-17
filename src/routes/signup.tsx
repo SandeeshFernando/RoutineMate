@@ -5,7 +5,19 @@ import { Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
-export const Route = createFileRoute("/signup")({ component: SignupPage });
+export const Route = createFileRoute("/signup")({
+  component: SignupPage,
+  head: () => ({
+    meta: [
+      { title: "Sign up — RoutineMate AI" },
+      { name: "description", content: "Create your free RoutineMate AI account and start building AI-powered daily routines, catch-up plans, and a 21-day reward challenge." },
+      { property: "og:title", content: "Sign up — RoutineMate AI" },
+      { property: "og:description", content: "Create a free RoutineMate AI account and start your 21-day routine challenge with Aria." },
+      { property: "og:url", content: "https://achieve-ai-app.lovable.app/signup" },
+    ],
+    links: [{ rel: "canonical", href: "https://achieve-ai-app.lovable.app/signup" }],
+  }),
+});
 
 function SignupPage() {
   const nav = useNavigate();

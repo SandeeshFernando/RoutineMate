@@ -4,7 +4,19 @@ import { CheckCircle2, Circle, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-export const Route = createFileRoute("/_authenticated/routine")({ component: RoutinePage });
+export const Route = createFileRoute("/_authenticated/routine")({
+  component: RoutinePage,
+  head: () => ({
+    meta: [
+      { title: "Today's Routine — RoutineMate AI" },
+      { name: "description", content: "All of today's tasks across your goals in one focused list — check them off as you go." },
+      { property: "og:title", content: "Today's Routine — RoutineMate AI" },
+      { property: "og:description", content: "Today's tasks across all your goals." },
+      { property: "og:url", content: "https://achieve-ai-app.lovable.app/routine" },
+    ],
+    links: [{ rel: "canonical", href: "https://achieve-ai-app.lovable.app/routine" }],
+  }),
+});
 
 function RoutinePage() {
   const { user } = useAuth();

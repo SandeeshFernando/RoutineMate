@@ -10,7 +10,19 @@ import { useAuth } from "@/contexts/AuthContext";
 import { extractRoadmap, extractTime, type RoadmapRow } from "@/lib/aria-sync";
 import { useNavigate } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_authenticated/coach")({ component: CoachPage });
+export const Route = createFileRoute("/_authenticated/coach")({
+  component: CoachPage,
+  head: () => ({
+    meta: [
+      { title: "Aria — Your AI Coach | RoutineMate AI" },
+      { name: "description", content: "Chat with Aria, your personal AI coach. Describe your schedule and she designs your routine, catch-up plan, and 21-day roadmap." },
+      { property: "og:title", content: "Aria — Your AI Coach | RoutineMate AI" },
+      { property: "og:description", content: "Chat with Aria to build your personalized routine and roadmap." },
+      { property: "og:url", content: "https://achieve-ai-app.lovable.app/coach" },
+    ],
+    links: [{ rel: "canonical", href: "https://achieve-ai-app.lovable.app/coach" }],
+  }),
+});
 
 type Msg = { id?: string; role: "user" | "assistant"; content: string };
 
@@ -283,6 +295,7 @@ function CoachPage() {
 
   return (
     <div className="grid gap-4 md:grid-cols-[260px_1fr]">
+      <h1 className="sr-only">Aria — your personal AI coach chat</h1>
       {/* Sidebar */}
       <aside className="hidden md:block">
         <button
@@ -390,6 +403,7 @@ function CoachPage() {
             />
             <button
               type="submit"
+              aria-label="Send message"
               disabled={!input.trim() || streaming}
               className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground disabled:opacity-50"
             >

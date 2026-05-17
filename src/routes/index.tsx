@@ -6,6 +6,39 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export const Route = createFileRoute("/")({
   component: Index,
+  head: () => ({
+    meta: [
+      { title: "RoutineMate AI — Meet Aria, your personal AI routine coach" },
+      { name: "description", content: "Chat with Aria, a personal AI coach who builds your daily routine, catch-up plan, and 21-day reward challenge around your real life and schedule." },
+      { property: "og:title", content: "RoutineMate AI — Meet Aria, your AI routine coach" },
+      { property: "og:description", content: "Aria builds personalized daily routines, catch-up plans, and a 21-day reward challenge that fits your schedule." },
+      { property: "og:url", content: "https://achieve-ai-app.lovable.app/" },
+      { property: "og:type", content: "website" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://achieve-ai-app.lovable.app/" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "RoutineMate AI",
+          url: "https://achieve-ai-app.lovable.app/",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "RoutineMate AI",
+          url: "https://achieve-ai-app.lovable.app/",
+        }),
+      },
+    ],
+  }),
 });
 
 function Index() {
@@ -33,6 +66,7 @@ function Index() {
         </Link>
       </header>
 
+      <main>
       <section className="mx-auto max-w-3xl px-4 pt-12 text-center md:pt-20">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
           <Sparkles className="h-3 w-3" /> Meet Aria — your personal AI coach
@@ -87,11 +121,12 @@ function Index() {
         ].map((f) => (
           <div key={f.title} className="rounded-2xl border border-border bg-card p-5">
             <f.icon className="h-5 w-5 text-primary" />
-            <h3 className="mt-3 text-base font-semibold">{f.title}</h3>
+            <h2 className="mt-3 text-base font-semibold">{f.title}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
           </div>
         ))}
       </section>
+      </main>
 
       <footer className="mx-auto mt-20 max-w-5xl px-4 py-8 text-center text-xs text-muted-foreground">
         Small steps every day create big results.
